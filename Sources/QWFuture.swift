@@ -8,7 +8,7 @@
 
 @_exported import Suv
 
-public class QWFuture<T> {
+public final class QWFuture<T> {
     
     private let handler: ((() throws -> T) -> ()) -> ()
     
@@ -24,7 +24,7 @@ public class QWFuture<T> {
     
     private var settled = false
     
-    init(loop: Loop = Loop.defaultLoop, handler: ((() throws -> T) -> ()) -> ()){
+    public init(loop: Loop = Loop.defaultLoop, handler: ((() throws -> T) -> ()) -> ()){
         self.loop = loop
         self.handler = handler
     }
