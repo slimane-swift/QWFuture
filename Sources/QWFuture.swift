@@ -46,7 +46,7 @@ public final class QWFuture<T> {
         
         settled = true
         
-        let onThread = { [unowned self] in
+        let onThread = {
             self.handler {
                 do {
                     self.result = try $0()
@@ -56,7 +56,7 @@ public final class QWFuture<T> {
             }
         }
         
-        let onFinish = { [unowned self] in
+        let onFinish = {
             if let error = self.error {
                 self.onFailureHandler(error)
                 return
