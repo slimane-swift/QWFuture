@@ -16,30 +16,30 @@ public final class QWFuture<T> {
     
     private var result: T?
     
-    private var error: ErrorProtocol?
+    private var error: Error?
     
     private var onSucessHandler: (T) -> () = { _ in }
     
-    private var onFailureHandler: (ErrorProtocol) -> () = { _ in }
+    private var onFailureHandler: (Error) -> () = { _ in }
     
     private var settled = false
     
-    public init(loop: Loop = Loop.defaultLoop, handler: ((() throws -> T) -> ()) -> ()){
+    public init(loop: Loop = Loop.defaultLoop, handler: @escaping ((() throws -> T) -> ()) -> ()){
         self.loop = loop
         self.handler = handler
     }
     
-    public func onSuccess(_ handler: (T) -> ()){
+    public func onSuccess(_ handler: @escaping (T) -> ()){
         self.onSucessHandler = handler
-        attemptToInvoke()
+        execute()
     }
     
-    public func onFailure(_ handler: (ErrorProtocol) -> ()){
+    public func onFailure(_ handler: @escaping (Error) -> ()){
         self.onFailureHandler = handler
-        attemptToInvoke()
+        execute()
     }
     
-    private func attemptToInvoke(){
+    private func execute(){
         if settled {
             return
         }
