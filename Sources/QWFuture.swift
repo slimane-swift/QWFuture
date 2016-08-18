@@ -14,10 +14,6 @@ public final class QWFuture<T> {
     
     private let loop: Loop
     
-    private var result: T?
-    
-    private var error: Error?
-    
     private var onSucessHandler: (T) -> () = { _ in }
     
     private var onFailureHandler: (Error) -> () = { _ in }
@@ -46,22 +42,22 @@ public final class QWFuture<T> {
         
         settled = true
         
-        let onThread = {
+        let onThread: (QueueWorkContext) -> Void = { ctx in
             self.handler {
                 do {
-                    self.result = try $0()
+                    ctx.storage["result"] = try $0()
                 } catch {
-                    self.error = error
+                    ctx.storage["error"] = error
                 }
             }
         }
         
-        let onFinish = {
-            if let error = self.error {
+        let onFinish: (QueueWorkContext) -> Void = { ctx in
+            if let error = ctx.storage["error"] as? Error {
                 self.onFailureHandler(error)
                 return
             }
-            self.onSucessHandler(self.result!)
+            self.onSucessHandler(ctx.storage["result"] as! T)
         }
         
         Process.qwork(loop: loop, onThread: onThread, onFinish: onFinish)
